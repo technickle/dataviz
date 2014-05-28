@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>NYS Thruway Traffic Visualization</title>
+  <style>
+    body {
+      font: 10px sans-serif;
+      background:#000;
+      text-align:center;
+      padding: 0;
+      margin: 0;
+    }
+    
+    header {
+      background:#A2A2A2;
+      color:#262626;
+      font: 14px sans-serif;
+    }
+
+    #circle circle {
+      fill: none;
+      pointer-events: all;
+    }
+
+    #circle:hover path.fade {
+      display: none;
+    }
+ 
+    .outer:hover {
+      cursor:pointer;
+    }
+    
+  </style>
+</head>
+<body>
+<header>
+  <p>NYS Thruway Passenger Car Trips in 2012 - BETA - Visualization by <a href="https://twitter.com/technickle">@technickle</a> and <a href="https://twitter.com/chris_whong">@chris_whong</a>, based upon <a href="http://bost.ocks.org/mike/uberdata/">this</a>. <a href="https://github.com/technickle/thruway-sankey/issues">Contribute</a> or <a href="https://github.com/technickle/thruway-sankey/tree/gh-pages">view the source code<a/>!</p>
+</header>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var width = 800,
+    height = 800,
+    innerRadius = Math.min(width, height) * .41,
+    outerRadius = innerRadius * 1.1,
+    chordOpacity = .8;
+    
+var formatNumber = d3.format("0,000d");
+
+var arc = d3.svg.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
+
+var layout = d3.layout.chord()
+    .padding(.005);
+
+var path = d3.svg.chord()
+    .radius(innerRadius - 1);
+
+var svg = d3.select("body").append("svg")
+    .attr("width",width)
+    .attr("height",height)
+  .append("g")
+    .attr("id", "circle")
+    .attr("transform","translate(" + width / 2 + "," + height / 2 + ")");
+
+var colors = ['rgb(141,211,199)','rgb(255,255,179)','rgb(190,186,218)','rgb(251,128,114)','rgb(128,177,211)','rgb(253,180,98)'];
+
+svg.append("circle")
+    .attr("r", outerRadius);
+
+d3.json("thruway-2l-matrix.json", function(matrix) {
+  d3.csv("thruway-exits.csv", function(exits) {
+    layout.matrix(matrix);
+ 
+    // add the segments around the outside of the circle, each as a group  
+    var group = svg.selectAll(".group")
+      .data(layout.groups)
+      .enter().append("g")
+        .classed({'group':true})
+        .on("mouseover",mouseover)
+        .on("mouseout",mouseout);
+      
+    // this text shows as a tooltip when the mouse is hovered
+    // some rounding issues showing up at the moment
+    group.append("title").text(function(d,i) {
+      return "Exit " + exits[i].exit + ": " + exits[i].name + "; " +  formatNumber(d.value) + " entries";
+    });
+  
+    var groupPath = group.append("path")
+        .attr("id", function(d,i) { return "group" + i; })
+        .classed({'outer':true})
+        .attr("d", arc)
+        .style("fill", function(d,i) { return colors[exits[i].color]; });
+      
+    var groupText = group.append("text")
+        .attr("x", 6)
+        .attr("dy", 15);
+  
+    groupText.append("textPath")
+        .attr("xlink:href", function(d,i) { return "#group" + i; })
+        .text(function(d,i) { return exits[i].exit; });
+        
+    groupText.filter(function(d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
+        .remove();  
+  
+    var chord = svg.selectAll(".chord")
+        .data(layout.chords)
+      .enter().append("path")
+        .classed({'chord':true})
+        .style("fill", function(d) { return colors[exits[d.source.index].color]; })
+        .attr("d", path)
+        .style("opacity",chordOpacity);
+  
+    chord.append("title").text(function(d) {
+      return exits[d.source.index].exit 
+        + " → " + exits[d.target.index].exit
+        + ": " + formatNumber(d.source.value) + " trips"
+        + "\n" + exits[d.target.index].exit
+        + " → " + exits[d.source.index].exit
+        + ": " + formatNumber(d.target.value) + " trips";
+    });
+
+    function mouseover(d,i) {
+      chord.classed("fade", function(p) {
+        return p.source.index != i
+          && p.target.index != i;
+        });
+    }
+
+    function mouseout(d,i){
+      //d3.selectAll(".fade").classed({'fade':false});
+    }
+  });
+})
+</script>
+</body>
