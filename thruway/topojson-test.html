@@ -40,17 +40,17 @@
       .translate(t);
 
     svg.append("g")
-        .attr("class", "countyareas")
-        .selectAll("path")
-        .data(counties.features)
-        .enter()
+      .attr("class", "countyareas")
+      .selectAll("path")
+      .data(counties.features)
+      .enter()
         .append("path")
         .attr("d", path)
         .attr("id", function(d) {
-          return "r" + d.id
+          return "r" + d.id;
           svg.append("path")
-          .datum(counties)
-          .attr("d", path);
+            .datum(counties)
+            .attr("d", path);
         });
 
 </script>
