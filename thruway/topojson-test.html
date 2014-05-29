@@ -15,14 +15,20 @@
     .attr("width", width)
     .attr("height", height);
 
-  d3.json("ny-counties.topojson", function(error, nycounties) {
+  d3.json("ny-counties.topojson", function(error, nyscounties) {
     if (error) return console.error(error);
     //to be removed
 
 
+    var counties = topojson.feature(nyscountes, nyscounties.objects.nyscnty)
+    var projection = d3.geo.mercator()
+      .scale(500)
+      .translate([width / 2, height / 2]);
+    var path = d3.geo.path()
+      .projection(projection);
     svg.append("path")
-      .datum(topojson.feature(nycounties, nycounties.objects.nyscnty))
-      .attr("d", d3.geo.path().projection(d3.geo.mercator()));
+      .datum(counties)
+      .attr("d", path);
   });
 
 </script>
