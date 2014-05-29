@@ -20,7 +20,7 @@
     //to be removed
 
 
-    var counties = topojson.feature(nyscountes, nyscounties.objects.nyscnty)
+    var counties = topojson.feature(nyscounties, nyscounties.objects.nyscnty)
     var projection = d3.geo.mercator()
       .scale(500)
       .translate([width / 2, height / 2]);
