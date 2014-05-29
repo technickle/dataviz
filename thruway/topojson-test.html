@@ -21,12 +21,8 @@
 
     var counties = topojson.feature(nyscounties, nyscounties.objects.nyscnty)
     
-    var projection = d3.geo.albers()
-    .center([0, 55.4])
-    .rotate([76 + 35 / 60, -40 - 00 / 60])
-    .parallels([40, 50])
-    .scale(8000 * 5)
-    .translate([width / 2, height / 2]);
+    var projection = d3.geo.albersUsa()
+
   
     var path = d3.geo.path()
       .projection(projection);
