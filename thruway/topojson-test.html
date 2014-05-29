@@ -23,8 +23,16 @@
     var counties = topojson.feature(nyscounties, nyscounties.objects.nyscnty)
     var projection = d3.geo.transverseMercator()
       .rotate([76 + 35 / 60, -40 - 00 / 60]);
-      .scale(1000)
-    .translate([width / 2, height / 2]);
+      .scale(1)
+      .translate([0, 0]);
+
+      var b = path.bounds(counties),
+        s = .95 / Math.max((b[1][0] - b[0][0]) / d3vals.wmap, (b[1][1] - b[0][1]) / (d3vals.hmap * 0.9)),
+        t = [(d3vals.wmap - s * (b[1][0] + b[0][0])) / 2, ((d3vals.hmap) - s * (b[1][1] + b[0][1])) / 2];
+
+      projection.scale(s)
+        .translate(t);
+
     var path = d3.geo.path()
       .projection(projection);
     svg.append("path")
