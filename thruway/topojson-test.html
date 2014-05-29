@@ -18,10 +18,10 @@
   d3.json("ny-counties.topojson", function(error, nycounties) {
     if (error) return console.error(error);
     //to be removed
-    console.log(nycounties);
+
 
     svg.append("path")
-      .datum(topojson.feature(nycounties, nycounties.objects.subunits))
+      .datum(topojson.feature(nycounties, nycounties.objects.nyscnty))
       .attr("d", d3.geo.path().projection(d3.geo.mercator()));
   });
 
