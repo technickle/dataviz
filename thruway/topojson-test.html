@@ -22,7 +22,7 @@
     var counties = topojson.feature(nyscounties, nyscounties.objects.nyscnty)
     
     var projection = d3.geo.albersUsa()
-      .scale(500)
+      .scale(1000)
 
     var path = d3.geo.path()
       .projection(projection);
