@@ -39,10 +39,16 @@
       .scale(s)
       .translate(t);
 
-    svg.append("path")
+    svg.selectAll(".subunit")
+      .data(topojson.feature(nyscounties, counties).features)
+      .enter().append("path")
+//        .attr("class", function(d) { return "county " + d.id; })
+        .attr("d", path);
+
+/*    svg.append("path")
       .datum(counties)
       .attr("d", path);
-  });
+  }); */
 
 </script>
 </body>
