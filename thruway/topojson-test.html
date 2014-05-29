@@ -22,7 +22,7 @@
 
     var counties = topojson.feature(nyscounties, nyscounties.objects.nyscnty)
     var projection = d3.geo.transverseMercator()
-      .rotate([76 + 35 / 60, -40 - 00 / 60]);
+      .rotate([76 + 35 / 60, -40 - 00 / 60]).
       .scale(1)
       .translate([0, 0]);
 
