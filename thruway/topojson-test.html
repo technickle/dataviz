@@ -39,15 +39,10 @@
       .scale(s)
       .translate(t);
 
-    svg.selectAll()
-      .data(topojson.feature(nyscounties, counties).features)
-      .enter().append("path")
-        .attr("d", path);
-
-/*    svg.append("path")
+    svg.append("path")
       .datum(counties)
       .attr("d", path);
-  }); */
+  });
 
 </script>
 </body>
