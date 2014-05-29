@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <style>
+    path:countyarea {fill: red;
+                    stroke: black}
   </style>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -40,7 +42,7 @@
       .translate(t);
 
     svg.append("g")
-      .attr("class", "countyareas")
+      .attr("class", "countyarea")
       .selectAll("path")
       .data(counties.features)
       .enter()
