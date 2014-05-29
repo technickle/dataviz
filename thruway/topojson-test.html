@@ -39,10 +39,19 @@
       .scale(s)
       .translate(t);
 
-    svg.append("path")
-      .datum(counties)
-      .attr("d", path);
-  });
+    svg.append("g")
+        .attr("class", "countyareas")
+        .selectAll("path")
+        .data(counties.features)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .attr("id", function(d) {
+          return "r" + d.id
+          svg.append("path")
+          .datum(counties)
+          .attr("d", path);
+        });
 
 </script>
 </body>
