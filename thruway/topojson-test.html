@@ -6,14 +6,12 @@
     .county { fill: black;
                   stroke: white;
                   opacity: 0.2;   }
-    .thruway     { fill: orange;
+    .thruway     { fill: none;
                   stroke: orange;
-                  stroke-width: 2px;
-                  opacity: 0.5;   }
-    .interchange { fill: black;
-                      stroke: white;
+                  stroke-width: 4px;
+                  opacity: 0.7;   }
+    .interchange { fill: darkblue;
                       opacity: 1.0}
-    .interchange:hover {fill: red}
   </style>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -29,12 +27,12 @@
 
   d3.json("counties.topojson", function(error, nycounties) {
     if (error) return console.error(error);
-    d3.json("thruway.topojson", function (error, nythruway) {
+    d3.json("thruway.geojson", function (error, thruway) {
       if (error) return console.error(error);
       d3.json("interchanges.topojson", function (error, nyinterchanges) {
 
       var counties = topojson.feature(nycounties, nycounties.objects.counties);
-      var thruway = topojson.feature(nythruway, nythruway.objects.thruway);
+      // var thruway = topojson.feature(nythruway, nythruway.objects.thruway);
       var interchanges = topojson.feature(nyinterchanges, nyinterchanges.objects.interchanges);
 
       var projection = d3.geo.transverseMercator()
@@ -74,7 +72,7 @@
         //draw the thruway
         svg.append("path")
           .attr("class","thruway")
-          .datum(topojson.mesh(nythruway, nythruway.objects.thruway))
+          .datum(thruway)
             .attr("d", path)
 
         //draw the interchanges
