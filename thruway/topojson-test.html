@@ -3,58 +3,89 @@
 <head>
   <meta charset="utf-8">
   <style>
-    .countyarea { fill: DarkBlue;
-                  stroke: black;
+    .county { fill: black;
+                  stroke: white;
+                  opacity: 0.2;   }
+    .thruway     { fill: orange;
+                  stroke: orange;
+                  stroke-width: 2px;
                   opacity: 0.5;   }
+    .interchange { fill: black;
+                      stroke: white;
+                      opacity: 1.0}
+    .interchange:hover {fill: red}
   </style>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
 </head>
 <body>
 <script>
-  var width = 800, height = 600;
+  // var width = window.innerWidth * 0.95, height = width * 0.75;
+  var width = 800, height = width * 0.75;
 
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-  d3.json("ny-counties.topojson", function(error, nyscounties) {
+  d3.json("counties.topojson", function(error, nycounties) {
     if (error) return console.error(error);
-    //to be removed
+    d3.json("thruway.topojson", function (error, nythruway) {
+      if (error) return console.error(error);
+      d3.json("interchanges.topojson", function (error, nyinterchanges) {
 
-    var counties = topojson.feature(nyscounties, nyscounties.objects.nyscnty);
-    
-    var projection = d3.geo.transverseMercator()
-      .rotate([76 + 35 / 60, -40 - 00 / 60]);
+      var counties = topojson.feature(nycounties, nycounties.objects.counties);
+      var thruway = topojson.feature(nythruway, nythruway.objects.thruway);
+      var interchanges = topojson.feature(nyinterchanges, nyinterchanges.objects.interchanges);
 
-    var path = d3.geo.path()
-      .projection(projection);
+      var projection = d3.geo.transverseMercator()
+        .rotate([76 + 35 / 60, -40 - 00 / 60])
+        .scale(1)
+        .translate([0,0]);
 
-    projection
-      .scale(1)
-      .translate([0, 0]);
+      var path = d3.geo.path()
+        .projection(projection)
+        .pointRadius(4);
 
-    var b = path.bounds(counties),
-      s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-      t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+      var b = path.bounds(counties),
+        s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+        t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 
-    projection
-      .scale(s)
-      .translate(t);
+      projection
+        .scale(s)
+        .translate(t);
 
-    svg.append("g")
-      .attr("class", "countyarea")
-      .selectAll("path")
-      .data(counties.features)
-      .enter()
+      //add the county background map
+      svg.append("g")
+        .attr("class", "counties")
         .append("path")
-        .attr("d", path)
-        .attr("id", function(d) {
-          return "r" + d.id;
-          svg.append("path")
-            .datum(counties)
+          .datum(counties)
+            .attr("d", path)
+            .attr("class","county")
+        // .enter()
+        //   .append("path")
+        //   .attr("d", path)
+        //   .attr("id", function(d) {
+        //     return "r" + d.id;
+        //     svg.append("path")
+        //       .datum(counties)
+        //       .attr("d", path);
+          // });
+
+        //draw the thruway
+        svg.append("path")
+          .attr("class","thruway")
+          .datum(topojson.mesh(nythruway, nythruway.objects.thruway))
+            .attr("d", path)
+
+        //draw the interchanges
+        svg.append("g")
+          .attr("class", "interchange")
+          .append("path")
+            .datum(interchanges)
             .attr("d", path);
-        });
+
+      });
+    });
 });
 
 </script>
