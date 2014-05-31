@@ -51,6 +51,8 @@ You can zoom in/out, drag to scroll, and click to reset map. Click an interchang
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
+    .style("border", "1px lightgrey solid")
+    .style("background-color","#F0F0F0");
 
   d3.json("counties.topojson", function(error, nycounties) {
     if (error) return console.error(error);
