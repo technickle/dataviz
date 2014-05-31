@@ -43,6 +43,7 @@
   <script src="http://d3js.org/topojson.v1.min.js"></script>
 </head>
 <body>
+You can zoom in/out, drag to scroll, and click to reset map. Click an interchange to select it.
 <script>
   var width = window.innerWidth * 0.95, height = width * 0.75;
   // var width = 1280, height = width * 0.75;
@@ -53,12 +54,12 @@
 
   d3.json("counties.topojson", function(error, nycounties) {
     if (error) return console.error(error);
-    d3.json("thruway.geojson", function (error, thruway) {
+    d3.json("thruway.topojson", function (error, nythruway) {
       if (error) return console.error(error);
       d3.json("interchanges.topojson", function (error, nyinterchanges) {
 
         var counties = topojson.feature(nycounties, nycounties.objects.counties);
-        // var thruway = topojson.feature(nythruway, nythruway.objects.thruway);
+        var thruway = topojson.feature(nythruway, nythruway.objects.thruway);
         var interchanges = topojson.feature(nyinterchanges, nyinterchanges.objects.interchanges);
 
         var projection = d3.geo.transverseMercator()
