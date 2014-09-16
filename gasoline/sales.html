@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+
+    body {
+      text-align: center;
+    }
+    .underlay {
+      fill: none;
+      pointer-events: all;
+    }
+    .county {
+      fill: #DDDDDD;
+      stroke: black;
+      stroke-width: 0.25;
+      vector-effect: non-scaling-stroke;
+    }
+
+    #legend {
+      padding: 1.5em 0 0 1.5em;
+    }
+    li.key {
+        border-top-width: 15px;
+        border-top-style: solid;
+        font-size: .75em;
+        width: 10%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+  </style>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/topojson.v1.min.js"></script>
+  <script>
+    var renderMap = function(maptype) {
+
+    //var width = window.innerWidth * 0.95, height = width * 0.75;
+    var width = 800, height = width * 0.75;
+
+    d3.select("svg").remove();
+
+    var svg = d3.select("#mapcontainer").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .style("border", "1px lightgrey solid")
+      .style("background-color","#FFFFFF");
+
+    var counties;
+
+    // to better group the renderings, need to create a structure which returns:
+    //    .d3scale: returns a d3.scale reference
+    //    .calculation: (takes d as a parameter) returns a function
+    //    .title: returns a string
+    //    etc?
+
+    //abstractor functions for filling county polygons based upon mode name parameter
+    var fill = function(modename) {
+      switch(modename) {
+        case "sales2000":
+          return d3.scale.linear().domain([0, 450000, 1200000]).range(["white","blue","black"]);
+          // linear range scale changes at 450M gallons to avoid NYC washing out smaller counties
+        case "sales2010":
+          return d3.scale.linear().domain([0, 450000, 1200000]).range(["white","blue","black"]);
+          // linear range scale changes at 450M gallons to avoid NYC washing out smaller counties
+        case "saleschange":
+          return d3.scale.linear().domain([-80000,0,80000]).range(["red","white","green"]);
+          // balanced range of greens for decreases and reds for increases
+        case "population2000":
+          return d3.scale.linear().domain([0,1000000, 8500000]).range(["white","blue","black"]);
+          // linear range scale changes at 1M population to avoid NYC washing out smaller counties
+        case "population2010":
+          return d3.scale.linear().domain([0,1000000, 8500000]).range(["white","blue","black"]);
+          // linear range scale changes at 1M population to avoid NYC washing out smaller counties
+        case "populationchange":
+          return d3.scale.linear().domain([-170000,-40000,0,40000,170000]).range(["purple","red","white","green","darkgreen"]);
+          // balanced range of reds for decreases and greens for increases.
+        case "salespercapita2000":
+            return d3.scale.linear().domain([0.1,0.56,1.2]).range(["white","blue","black"]);
+        case "salespercapita2010":
+            return d3.scale.linear().domain([0.1,0.56,1.2]).range(["white","blue","black"]);
+        case "salespercapitachange":
+          return d3.scale.linear().domain([-0.2,0,0.2]).range(["red","white","green"]);
+      }
+    }
+
+    // abstractor function for calculating fill values based upon mode name parameter
+    var calcfunction = function(modename) {
+      switch(modename) {
+        case "sales2000":
+          return function(d) { return d.properties.sales2000; };
+        case "sales2010":
+          return function(d) { return d.properties.sales2010;  };
+        case "saleschange":
+          return function(d) { return (d.properties.sales2010 - d.properties.sales2000);};
+        case "population2000":
+          return function(d) { return d.properties.POP2000;};
+        case "population2010":
+          return function(d) { return d.properties.POP2010;};
+        case "populationchange":
+          return function(d) { return (d.properties.POP2010 - d.properties.POP2000); };
+        case "salespercapita2000":
+          return function(d) { return (d.properties.sales2000 / d.properties.POP2000); };
+        case "salespercapita2010":
+          return function(d) { return (d.properties.sales2010 / d.properties.POP2010); };
+        case "salespercapitachange":
+          return function(d) { return (d.properties.sales2010 / d.properties.POP2010)-(d.properties.sales2000 / d.properties.POP2000); };
+        }
+      }
+
+
+    d3.json("nysgasoline.topojson", function(error, nycounties) {
+      if (error) return console.error(error);
+
+          counties = topojson.feature(nycounties, nycounties.objects.nysgasoline);
+          // fill for fuel per capita
+
+          // fillMode = "saleschange"
+          fillScale = fill(maptype)
+          fillFunction = calcfunction(maptype)
+
+          // fill for fuel baseline
+          // fill = d3.scale.linear().domain([1674,450000,1165989]).range(["white","blue","black"]);
+          var projection = d3.geo.transverseMercator()
+            .rotate([76 + 35 / 60, -40 - 00 / 60])
+            .scale(1)
+            .translate([0,0]);
+
+          var path = d3.geo.path()
+            .projection(projection)
+            .pointRadius(5);
+
+          var b = path.bounds(counties),
+            s = 1.0 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+            t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+          projection
+            .scale(s)
+            .translate(t);
+
+          var features = svg.append("g")
+
+          // //handle pan + zoom, limit to 5x zoom and pan to edges
+          // var zoom = d3.behavior.zoom()
+          //   .translate([0, 0])
+          //   .scale(1)
+          //   .scaleExtent([1, 5])
+          //   .on("zoom", function() {
+          //     var e = d3.event,
+          //       tx = Math.min(0, Math.max(e.translate[0], width - width * e.scale)),
+          //       ty = Math.min(0, Math.max(e.translate[1], height - height * e.scale));
+          //     zoom.translate([tx, ty]);
+          //     features.attr("transform", [
+          //       "translate(" + [tx, ty] + ")",
+          //       "scale(" + e.scale + ")"
+          //     ].join(" "));
+          //   });
+          //
+          // function reset() {
+          //   svg.transition()
+          //     .duration(750)
+          //     .call(zoom.translate([0, 0]).scale(1).event);
+          // }
+          //
+          // //handlers for pan/zoom, but let click pass through
+          // svg.call(zoom)
+          // svg.on("click", function() {
+          //   if (d3.event.defaultPrevented) d3.event.stopPropagation();
+          // }, true);
+
+
+          //add the county background map
+          features.selectAll("county")
+            .data(counties.features)
+            .enter()
+              .append("path")
+              .attr("id", function(d) { return d.properties.NAME })
+              .classed("county",true)
+              .attr("d", path)
+              .style("fill", function(d) { console.log(d.properties.NAME, fillFunction(d)); return fillScale(fillFunction(d)); });
+              //this above fill mechanism is virtualized for flexibility.
+
+          // features.append("rect")
+          //   .attr("class", "underlay")
+          //   .attr("width", width)
+          //   .attr("height", height)
+          //   .on("click", reset);
+          //
+          // var legend = d3.select('#legend')
+          //   .append('ul')
+          //     .attr('class', 'list-inline');
+          //
+          // var keys = legend.selectAll('li.key')
+          //     .data(colors.range());
+          //
+          // keys.enter().append('li')
+          //     .attr('class', 'key')
+          //     .style('border-top-color', String)
+          //     .text(function(d) {
+          //         var r = colors.invertExtent(d);
+          //         return formats.percent(r[0]);
+          //     });
+
+  });
+  };
+
+  </script>
+</head>
+<body onload="javascript:renderMap('salespercapitachange')">
+  Select a map to view:
+  <select onchange="javascript:renderMap(this.value)">
+    <option value="sales2000">Gasoline Sales (thousands of gallons) - 2000</option>
+    <option value="sales2010">Gasoline Sales (thousands of gallons) - 2010</option>
+    <option value="saleschange">Gasoline Sales - change from 2000 to 2010</option>
+    <option value="population2000">Population - 2000</option>
+    <option value="population2010">Population - 2010</option>
+    <option value="populationchange">Population - change from 2000 to 2010</option>
+    <option value="salespercapita2000">Gasoline Sales (thousands of gallons) per capita - 2000</option>
+    <option value="salespercapita2010">Gasoline Sales (thousands of gallons) per capita - 2010</option>
+    <option selected value="salespercapitachange">Gasoline Sales (thousands of gallons) per capita - change from 2000 to 2010</option>
+  </select>
+  <br /><br />
+  <div id="mapcontainer"></div>
+</body>
+</html>
