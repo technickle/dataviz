@@ -207,19 +207,26 @@
   </script>
 </head>
 <body onload="javascript:renderMap('salespercapitachange')">
-  Select a map to view:
-  <select onchange="javascript:renderMap(this.value)">
-    <option value="sales2000">Gasoline Sales (thousands of gallons) - 2000</option>
-    <option value="sales2010">Gasoline Sales (thousands of gallons) - 2010</option>
-    <option value="saleschange">Gasoline Sales - change from 2000 to 2010</option>
-    <option value="population2000">Population - 2000</option>
-    <option value="population2010">Population - 2010</option>
-    <option value="populationchange">Population - change from 2000 to 2010</option>
-    <option value="salespercapita2000">Gasoline Sales (thousands of gallons) per capita - 2000</option>
-    <option value="salespercapita2010">Gasoline Sales (thousands of gallons) per capita - 2010</option>
-    <option selected value="salespercapitachange">Gasoline Sales (thousands of gallons) per capita - change from 2000 to 2010</option>
-  </select>
-  <br /><br />
+  <div class="header">
+    Select a map to view:
+    <select onchange="javascript:renderMap(this.value)">
+      <option value="sales2000">Gasoline Sales (thousands of gallons) - 2000</option>
+      <option value="sales2010">Gasoline Sales (thousands of gallons) - 2010</option>
+      <option value="saleschange">Gasoline Sales - change from 2000 to 2010</option>
+      <option value="population2000">Population - 2000</option>
+      <option value="population2010">Population - 2010</option>
+      <option value="populationchange">Population - change from 2000 to 2010</option>
+      <option value="salespercapita2000">Gasoline Sales (thousands of gallons) per capita - 2000</option>
+      <option value="salespercapita2010">Gasoline Sales (thousands of gallons) per capita - 2010</option>
+      <option selected value="salespercapitachange">Gasoline Sales (thousands of gallons) per capita - change from 2000 to 2010</option>
+    </select>
+  </div>
   <div id="mapcontainer"></div>
+  <div class="footer">
+    Data sources:<br />
+      <a href="https://data.ny.gov/d/cwrk-j5nn">NYSERDA - gasoline sales (via data.ny.gov)</a>;
+      <a href="https://gis.ny.gov/gisdata/inventories/details.cfm?DSID=910">NYS GIS Clearinghouse - county boundaries</a>;
+      <a href="http://labor.ny.gov/stats/nys/statewide-population-data.shtm">NYS Labor - Population Data</a>
+  </div>
 </body>
 </html>
