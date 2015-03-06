@@ -3,13 +3,13 @@
   <head>
     <title>data.ny.gov record ticker</title>
     <style>
-      body, html {height: 100%; margin: 0; pasing: 0}
+      body, html {height: 100%; margin: 0; padding: 0}
       body {background: rgb(27,42,94); color: white; font-size: xx-large}
-      div.container {top: 0; left: 0; width; 100%; height: 100%; position: absolute; display: table}
+      div.container {top: 0; left: 0; width: 100%; height: 100%; position: absolute; display: table}
       p {display: table-cell; vertical-align: middle; text-align: center; font-size: xx-large;}
     </style>
-	</head>
-	<body>
+  </head>
+  <body>
     <div class="container">
       <p>Approximate number of records on data.ny.gov right now
         <br />
@@ -17,7 +17,6 @@
         <span id="record-count"><span>
       </p>
     </div>
-  </body>
     <script type="text/javascript">
       updateRecordCount(document.getElementById("record-count"), new Date(2013, 02, 11, 12), 0.00174403855);
       function updateRecordCount(element, startDate, recordsPerMillisecond) {
@@ -25,4 +24,5 @@
         window.setTimeout(updateRecordCount, 1000, element, startDate, recordsPerMillisecond);
       }
     </script>
+  </body>
 </html>
