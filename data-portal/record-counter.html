@@ -1,0 +1,41 @@
+<html>
+	<head>
+		<title>data.ny.gov record ticker</title>
+		<style>
+			body {
+				text-align: center;
+				background-color: rgb(27,42,94);
+				color: white
+			}
+			div {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				vertical-align: middle;
+			}
+			p {
+				display: inline-block;
+				font-size: xx-large
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<p>Approximate number of records on data.ny.gov right now
+				<br />
+				<br />
+				<span id="record-count"><span>
+			</p>
+		</div>
+		<script type="text/javascript">
+			updateRecordCount(document.getElementById("record-count"), new Date(2013, 02, 11, 12), 0.00174403855);
+			
+			function updateRecordCount(element, startDate, recordsPerMillisecond) {
+				element.innerHTML = Math.round(	(new Date() - startDate) * recordsPerMillisecond ).toLocaleString();
+				window.setTimeout(updateRecordCount, 1000, element, startDate, recordsPerMillisecond);
+			}
+
+			</script>
+	</body>
+</html>
