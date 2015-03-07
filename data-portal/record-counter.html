@@ -7,13 +7,16 @@
       body {background: #1B2A5E; color: white; font-size: xx-large; font-family: sans-serif;}
       div.container {top: 0; left: 0; width: 100%; height: 100%; position: absolute; display: table}
       p {display: table-cell; vertical-align: middle; text-align: center; font-size: 6vw;}
-      a:link, a:visited, a:hover, a:active {color: #f7a700;}
+      a:link, a:visited, a:hover, a:active {color: #f7a700; text-decoration: none;}
     </style>
   </head>
   <body>
     <div class="container">
-      <p>Approximate number of records on <a href="https://data.ny.gov/">data.ny.gov</a> right now</p>
-      <p><span id="record-count"><span></p>
+      <p>Approximate number of records on <a href="https://data.ny.gov/">data.ny.gov</a> right now
+        <br />
+        <br />
+        <span id="record-count"><span>
+      </p>
     </div>
     <script type="text/javascript">
       updateRecordCount(document.getElementById("record-count"), new Date(2013, 02, 11, 12), 0.00174403855);
