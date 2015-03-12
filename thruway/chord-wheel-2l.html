@@ -84,7 +84,7 @@ d3.json("thruway-2l-matrix.json", function(matrix) {
     // this text shows as a tooltip when the mouse is hovered
     // some rounding issues showing up at the moment
     group.append("title").text(function(d,i) {
-      return "Exit " + exits[i].exit + ": " + exits[i].name + "; " +  formatNumber(d.value) + " entries";
+      return "Exit " + exits[i].exit + ": " + exits[i].name + "; " +  formatNumber(Math.round(d.value)) + " entries";
     });
   
     var groupPath = group.append("path")
