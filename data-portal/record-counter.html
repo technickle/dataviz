@@ -19,7 +19,7 @@
       </p>
     </div>
     <script type="text/javascript">
-      updateRecordCount(document.getElementById("record-count"), new Date(2013, 02, 11, 12), 0.00172703855);
+      updateRecordCount(document.getElementById("record-count"), new Date(2013, 02, 11, 12), 0.00172903855);
       function updateRecordCount(element, startDate, recordsPerMillisecond) {
         element.innerHTML = Math.round(	(new Date() - startDate) * recordsPerMillisecond ).toLocaleString();
         window.setTimeout(updateRecordCount, 1000, element, startDate, recordsPerMillisecond);
